@@ -37,7 +37,7 @@
 
 @implementation EGORefreshTableHeaderView
 
-@synthesize delegate=_delegate;
+@synthesize delegate=_delegate, enabled = _enabled;
 
 
 - (id)initWithFrame:(CGRect)frame arrowImageName:(NSString *)arrow textColor:(UIColor *)textColor  {
@@ -93,6 +93,8 @@
 		
 		[self setState:EGOOPullRefreshNormal];
 		
+      _enabled = YES;
+      
     }
 	
     return self;
@@ -101,6 +103,16 @@
 
 - (id)initWithFrame:(CGRect)frame  {
   return [self initWithFrame:frame arrowImageName:@"blueArrow.png" textColor:TEXT_COLOR];
+}
+
+-(void) setEnabled:(BOOL)enabled
+{
+  _enabled = enabled;
+  if (!_enabled) {
+    self.alpha = 0.0;
+  } else {
+    self.alpha = 1.0;
+  }
 }
 
 #pragma mark -
@@ -188,7 +200,10 @@
 
 - (void)egoRefreshScrollViewDidScroll:(UIScrollView *)scrollView {	
 	
-	if (_state == EGOOPullRefreshLoading) {
+	if (!_enabled)
+    return;
+  
+  if (_state == EGOOPullRefreshLoading) {
 		
 		CGFloat offset = MAX(scrollView.contentOffset.y * -1, 0);
 		offset = MIN(offset, 60);
@@ -216,7 +231,10 @@
 }
 
 - (void)egoRefreshScrollViewDidEndDragging:(UIScrollView *)scrollView {
-	
+
+  if (!_enabled)
+    return;
+
 	BOOL _loading = NO;
 	if ([_delegate respondsToSelector:@selector(egoRefreshTableHeaderDataSourceIsLoading:)]) {
 		_loading = [_delegate egoRefreshTableHeaderDataSourceIsLoading:self];
