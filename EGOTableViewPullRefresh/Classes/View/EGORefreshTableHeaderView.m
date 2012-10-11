@@ -132,12 +132,7 @@
       return;
     }
     
-		[NSDateFormatter setDefaultFormatterBehavior:NSDateFormatterBehaviorDefault];
-		NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
-		[dateFormatter setDateStyle:NSDateFormatterShortStyle];
-		[dateFormatter setTimeStyle:NSDateFormatterShortStyle];
-
-		_lastUpdatedLabel.text = [NSString stringWithFormat:@"Last Updated: %@", [dateFormatter stringFromDate:date]];
+		_lastUpdatedLabel.text = [NSString stringWithFormat:@"Last updated: %@ ago", [[self class] timeInWordsFromTimeInterval:-date.timeIntervalSinceNow]];
 		[[NSUserDefaults standardUserDefaults] setObject:_lastUpdatedLabel.text forKey:@"EGORefreshTableView_LastRefresh"];
 		[[NSUserDefaults standardUserDefaults] synchronize];
 		
@@ -283,6 +278,34 @@
 	_arrowImage = nil;
 	_lastUpdatedLabel = nil;
     [super dealloc];
+}
+
+
++ (NSString *)timeInWordsFromTimeInterval:(NSTimeInterval)intervalInSeconds
+{
+	NSTimeInterval intervalInMinutes = round(intervalInSeconds / 60.0f);	
+	if (intervalInMinutes >= 0 && intervalInMinutes <= 1) {
+    return intervalInMinutes <= 0 ? @"less than a minute" : @"1 minute";
+	} else if (intervalInMinutes >= 2 && intervalInMinutes <= 44) {
+		return [NSString stringWithFormat:@"%d minutes", (NSInteger)intervalInMinutes];
+	} else if (intervalInMinutes >= 45 && intervalInMinutes <= 89) {
+		return @"about 1 hour";
+	} else if (intervalInMinutes >= 90 && intervalInMinutes <= 1439) {
+		return [NSString stringWithFormat:@"about %d hours", (NSInteger)round(intervalInMinutes / 60.0f)];
+	} else if (intervalInMinutes >= 1440 && intervalInMinutes <= 2879) {
+		return @"1 day";
+	} else if (intervalInMinutes >= 2880 && intervalInMinutes <= 43199) {
+		return [NSString stringWithFormat:@"%d days", (NSInteger)round(intervalInMinutes / 1440.0f)];
+	} else if (intervalInMinutes >= 43200 && intervalInMinutes <= 86399) {
+		return @"about 1 month";
+	} else if (intervalInMinutes >= 86400 && intervalInMinutes <= 525599) {
+		return [NSString stringWithFormat:@"%d months", (NSInteger)round(intervalInMinutes / 43200.0f)];
+	} else if (intervalInMinutes >= 525600 && intervalInMinutes <= 1051199) {
+		return @"about 1 year";
+	} else {
+		return [NSString stringWithFormat:@"over %d years", (NSInteger)round(intervalInMinutes / 525600.0f)];
+	}
+	return nil;
 }
 
 
