@@ -36,9 +36,13 @@
 - (void)setState:(EGOPullRefreshState)aState;
 @end
 
+
 @implementation EGORefreshTableHeaderView
 
-@synthesize delegate=_delegate, enabled = _enabled;
+
+@synthesize delegate = _delegate;
+@synthesize enabled = _enabled;
+@synthesize activityView = _activityView;
 
 
 - (id)initWithFrame:(CGRect)frame arrowImageName:(NSString *)arrow textColor:(UIColor *)textColor shadowColor:(UIColor *)shadowColor {
@@ -88,9 +92,8 @@
 		UIActivityIndicatorView *view = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
 		view.frame = CGRectMake(25.0f, frame.size.height - 38.0f, 20.0f, 20.0f);
 		[self addSubview:view];
-		_activityView = view;
+		self.activityView = view;
 		[view release];
-		
 		
 		[self setState:EGOOPullRefreshNormal];
 		
